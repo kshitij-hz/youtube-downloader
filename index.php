@@ -33,109 +33,101 @@
 </head>
 <body>
 	 <div class="container" style="background-color:#ececec;"> 
-		
-				<div class="header">
-					Youtube Downloader
-				</div>
-		
-	
-		
-			<div class="row">
-				<div class="col-md-8 col-md-offset-2">
-					<div class="searchBox" style="<?php echo $center; ?>">
-						<div class="searchForm">
-						<form role="form" method="GET">  
-							<div class="row">
-							  <div class="col-xs-12">
-								<div class="input-group input-group-lg">
-									<input type="text" class="form-control" name="keyword" placeholder="Please Enter Keyword to search videos" value="<?php echo $search; ?>" />
-								  <div class="input-group-btn">
-									<button type="submit" class="btn">Search</button>
-								  </div><!-- /btn-group -->
-								</div><!-- /input-group -->
-							  </div><!-- /.col-xs-12 -->
-							</div><!-- /.row -->
-						</form>
-					</div> <!-- searchForm-->
-					<div class="row" style="margin-top:35px;">
-					
-					<?php
-						if(isset($_GET['keyword']))
-						{
-							$keyword = $_GET['keyword'];
+		<div class="header">
+			Youtube Downloader
+		</div>
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+				<div class="searchBox" style="<?php echo $center; ?>">
+					<div class="searchForm">
+					<form role="form" method="GET">  
+						<div class="row">
+						  <div class="col-xs-12">
+							<div class="input-group input-group-lg">
+								<input type="text" class="form-control" name="keyword" placeholder="Please Enter Keyword to search videos" value="<?php echo $search; ?>" />
+							  <div class="input-group-btn">
+								<button type="submit" class="btn">Search</button>
+							  </div><!-- /btn-group -->
+							</div><!-- /input-group -->
+						  </div><!-- /.col-xs-12 -->
+						</div><!-- /.row -->
+					</form>
+				</div> <!-- searchForm-->
+				<div class="row" style="margin-top:35px;">
+				
+				<?php
+					if(isset($_GET['keyword']))
+					{
+						$keyword = $_GET['keyword'];
+						
+						$keyword=preg_replace("/ /","+",$keyword);
+						
+						$response = file_get_contents("https://www.googleapis.com/youtube/v3/search?part=snippet&q={$keyword}&type=video&key=AIzaSyBqhtJ3_FLsK74e0qh9FyDlnGyaggVsIk0&maxResults=8");
+						
+						$searchResponse = json_decode($response,true);
+						$i=0;
+						foreach ($searchResponse['items'] as $searchResult) {
+						$i++;
+						$a = $searchResult['id']['videoId'];
+						$b = preg_replace('/[^a-zA-Z0-9]/', '_', $searchResult['snippet']['title']);
+						 
+						
+						?>
+						<div class="col-md-3" style="margin-bottom:30px;">
+							<div id="<?php echo $a; ?>" class="vid"> 
+								 <div> 
+							 		<img src="<?php echo $searchResult['snippet']['thumbnails']['default']['url']; ?>" alt="Youtube Video" style="width:100%;">
+								</div> 
 							
-							$keyword=preg_replace("/ /","+",$keyword);
-							
-							$response = file_get_contents("https://www.googleapis.com/youtube/v3/search?part=snippet&q={$keyword}&type=video&key=AIzaSyBqhtJ3_FLsK74e0qh9FyDlnGyaggVsIk0&maxResults=8");
-							
-							$searchResponse = json_decode($response,true);
-							$i=0;
-							foreach ($searchResponse['items'] as $searchResult) {
-							$i++;
-							$a = $searchResult['id']['videoId'];
-							$b = preg_replace('/[^a-zA-Z0-9]/', '_', $searchResult['snippet']['title']);
-							 
-							
-							?>
-							<div class="col-md-3" style="margin-bottom:30px;">
-								<div id="<?php echo $a; ?>" class="vid"> 
-									 <div> 
-								 		<img src="<?php echo $searchResult['snippet']['thumbnails']['default']['url']; ?>" alt="Youtube Video" style="width:100%;">
-									</div> 
-								
-									<div> 
-										<?php echo $searchResult['snippet']['title']; ?>
-									</div>
-								
+								<div> 
+									<?php echo $searchResult['snippet']['title']; ?>
 								</div>
-							</div>	
-								
-								<?php
-								if($i==4)
-									echo '</div><div class="row" style="margin-top:5px;">';
-								}
+							
+							</div>
+						</div>	
+							
+							<?php
+							if($i==4)
+								echo '</div><div class="row" style="margin-top:5px;">';
 							}
-							elseif (isset($_GET['v'])) {
-									// code...
-								
-									$v_id = $_GET['v'];
+						}
+						elseif (isset($_GET['v'])) {
+								// code...
+							
+								$v_id = $_GET['v'];
 
-								echo '<table class="table table-striped table-bordered table-hover watch" style="cursor:pointer;">
-										<tr>
-											<td>
-												<img src="https://i.ytimg.com/vi/'.$v_id.'/default.jpg" style="border-radius:2px;">
-											</td>
-											<td id="dwnld-title">
+							echo '<table class="table table-striped table-bordered table-hover watch" style="cursor:pointer;">
+									<tr>
+										<td>
+											<img src="https://i.ytimg.com/vi/'.$v_id.'/default.jpg" style="border-radius:2px;">
+										</td>
+										<td id="dwnld-title">
 
-											</td>
-										</tr>
-									  </table>';
-								
-								echo '<table class="table table-striped table-bordered table-hover">';
-								$json=file_get_contents("https://api.wapclub.xyz/api.php?id=$v_id");
-								$json=json_decode($json, true);
-								foreach($json as $data){
-									if(!isset($title)){
-										$title = preg_replace("/[^A-Za-z0-9 ]/", '', $data['title']); 
-									}
-								echo '<tr>';
-								echo "<td>$data[quality]</td>";	
-								echo "<td>$data[format]</td>";	
-								echo '<td><a class="btn btn-default" href="'.$data['url'].'&title='.urlencode($data['title']).'" >
-								Download</a></td>';
-								echo '</tr>';	
+										</td>
+									</tr>
+								  </table>';
+							
+							echo '<table class="table table-striped table-bordered table-hover">';
+							$json=file_get_contents("https://api.wapclub.xyz/api.php?id=$v_id");
+							$json=json_decode($json, true);
+							foreach($json as $data){
+								if(!isset($title)){
+									$title = preg_replace("/[^A-Za-z0-9 ]/", '', $data['title']); 
 								}
-								echo '</table>';							}
-					
+							echo '<tr>';
+							echo "<td>$data[quality]</td>";	
+							echo "<td>$data[format]</td>";	
+							echo '<td><a class="btn btn-default" href="'.$data['url'].'&title='.urlencode($data['title']).'" >
+							Download</a></td>';
+							echo '</tr>';	
+							}
+							echo '</table>';							}
+				
 
-					?>
-					</div>
-				</div> <!--searchBox-->
-			</div> <!--col md 8-->
-
-			
-			
-
+				?>
+				</div>
+			</div> <!--searchBox-->
+		</div> <!--col md 8-->
 		</div> <!--row-->
 		
 		<!-- Modal starts -->
@@ -144,16 +136,6 @@
 
     <!-- Modal content-->
     <div class="modal-content" id="watch">
-      <!-- <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">DOWNLOAD</h4>
-      </div> -->
-<!--       <div id="downloadFormatList" class="modal-body">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
- -->
     </div>
 </div>
 </div>
@@ -170,26 +152,12 @@
       	<span class="btn btn-primary btn-lg btn-block watch">WATCH</span>
 		<button type="submit" class="btn btn-danger btn-lg btn-block">DOWNLOAD</button>
 	</form>
-	  <!-- <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">DOWNLOAD</h4>
-      </div> -->
-<!--       <div id="downloadFormatList" class="modal-body">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
- -->
     </div>
 </div>
 </div>
 <!--modal ends-->
-		
-		
-	</div>	 <!--container-->
-	
-	
-	
+</div>	 <!--container-->
+
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script>
 	 
@@ -213,6 +181,5 @@
 			echo '<script>$(document).ready(function(){$("#dwnld-title").html("'.$title.'");$("#v_id").val("'.$v_id.'");}); </script>';
 									
 ?>
-
 </body>
 </html>
