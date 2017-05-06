@@ -1,7 +1,9 @@
 <?php
-	$center="";
+	$center=$search="";
 	if(!isset($_GET['keyword']) && !isset($_GET['v']))
 		$center = "margin-top:200px;";
+	if(isset($_GET['keyword']))
+		$search = $_GET['keyword'];
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -46,7 +48,7 @@
 							<div class="row">
 							  <div class="col-xs-12">
 								<div class="input-group input-group-lg">
-									<input type="text" class="form-control" name="keyword" placeholder="Please Enter Keyword to search videos" />
+									<input type="text" class="form-control" name="keyword" placeholder="Please Enter Keyword to search videos" value="<?php echo $search; ?>" />
 								  <div class="input-group-btn">
 									<button type="submit" class="btn">Search</button>
 								  </div><!-- /btn-group -->
